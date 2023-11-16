@@ -194,9 +194,12 @@ def main():
 		kpiresults = KPIResultSet(kpimeasures = [])
 		cur_kpiresults = analyze_pdf(config.global_raw_pdf_folder + pdf, kpis, DEFAULT_YEAR, info_file_contents, wildcard_restrict_page='*', assume_conversion_done=False, force_parse_pdf=False) ### TODO:  Modify * in order to analyze specfic page, e.g.:  *00042 ###
 		kpiresults.extend(cur_kpiresults)
-
 		
 		true_kpiresults = KPIResultSetTrue(config.global_true_data_folder,pdf) 
+		true_kpiresults.evaluate(kpiresults.kpimeasures)
+		true_kpiresults.printEval()
+		
+		
 	    # add evaluation function here
 		# true_kpiresults.evaluate() --> pass real result  
 		
