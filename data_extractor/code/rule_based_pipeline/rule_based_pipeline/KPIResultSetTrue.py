@@ -14,7 +14,6 @@ class KPIResultSetTrue:
                 for value in kpiresults:
                     if (true.get("ID") != value.kpi_id) or (y != value.year):
                         continue
-                    print(true.get("ID"), " : " ,  value.kpi_id, " :: " ,y, " : ", value.year)
                     if (str(v) == value.value) and (p == value.page_num):
                         self.result[true.get("ID")-6].append(True)
                     else:
