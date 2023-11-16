@@ -17,11 +17,11 @@ from TestData import *
 from DataImportExport import *
 from test import * #only for testing / debugging purpose
 import config
+from KPIResultSetTrue import *
+
 
 
 	
-	
-
 	
 	
 def generate_dummy_test_data():
@@ -109,31 +109,31 @@ def get_input_variable(val, desc):
 	
 def main():
 
-	DEFAULT_YEAR = 2019
+	DEFAULT_YEAR = 2022
 	
-	parser = argparse.ArgumentParser(description='Rule-based KPI extraction')
+	#parser = argparse.ArgumentParser(description='Rule-based KPI extraction')
 	# Add the arguments
-	parser.add_argument('--raw_pdf_folder',
-						type=str,
-						default=None,
-						help='Folder where PDFs are stored')
-	parser.add_argument('--working_folder',
-						type=str,
-						default=None,
-						help='Folder where working files are stored')
-	parser.add_argument('--output_folder',
-						type=str,
-						default=None,
-						help='Folder where output is stored')
-	parser.add_argument('--verbosity',
-						type=int,
-						default=1,
-						help='Verbosity level (0=shut up)')
-	args = parser.parse_args()
-	config.global_raw_pdf_folder = remove_trailing_slash(get_input_variable(args.raw_pdf_folder, "What is the raw pdf folder?")).replace('\\', '/') + r'/'
-	config.global_working_folder = remove_trailing_slash(get_input_variable(args.working_folder, "What is the working folder?")).replace('\\', '/') + r'/'
-	config.global_output_folder =  remove_trailing_slash(get_input_variable(args.output_folder, "What is the output folder?")).replace('\\', '/') + r'/'
-	config.global_verbosity = args.verbosity
+	#parser.add_argument('--raw_pdf_folder',
+	#					type=str,
+	#					default=None,
+	#					help='Folder where PDFs are stored')
+	#parser.add_argument('--working_folder',
+	#					type=str,
+	#					default=None,
+	#					help='Folder where working files are stored')
+	#parser.add_argument('--output_folder',
+	#					type=str,
+	#					default=None,
+	#					help='Folder where output is stored')
+	#parser.add_argument('--verbosity',
+	#					type=int,
+	#					default=1,
+	#					help='Verbosity level (0=shut up)')
+	#args = parser.parse_args()
+	#config.global_raw_pdf_folder = remove_trailing_slash(get_input_variable(args.raw_pdf_folder, "What is the raw pdf folder?")).replace('\\', '/') + r'/'
+	#config.global_working_folder = remove_trailing_slash(get_input_variable(args.working_folder, "What is the working folder?")).replace('\\', '/') + r'/'
+	#config.global_output_folder =  remove_trailing_slash(get_input_variable(args.output_folder, "What is the output folder?")).replace('\\', '/') + r'/'
+	#config.global_verbosity = args.verbosity
 	
 	os.makedirs(config.global_working_folder, exist_ok=True)
 	os.makedirs(config.global_output_folder, exist_ok=True)
@@ -190,9 +190,16 @@ def main():
 	time_start = time.time()
 	
 	for pdf in pdfs:
+		
 		kpiresults = KPIResultSet(kpimeasures = [])
 		cur_kpiresults = analyze_pdf(config.global_raw_pdf_folder + pdf, kpis, DEFAULT_YEAR, info_file_contents, wildcard_restrict_page='*', assume_conversion_done=False, force_parse_pdf=False) ### TODO:  Modify * in order to analyze specfic page, e.g.:  *00042 ###
 		kpiresults.extend(cur_kpiresults)
+
+		
+		true_kpiresults = KPIResultSetTrue(config.global_true_data_folder,pdf) 
+	    # add evaluation function here
+		# true_kpiresults.evaluate() --> pass real result  
+		
 		overall_kpiresults.extend(cur_kpiresults)
 		kpiresults.save_to_csv_file(config.global_output_folder + pdf + r'.csv')
 		print_verbose(1, "RESULT FOR " + pdf)
