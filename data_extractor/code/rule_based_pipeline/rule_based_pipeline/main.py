@@ -188,6 +188,8 @@ def main():
 	info_file_contents = DataImportExport.load_info_file_contents(remove_trailing_slash(config.global_working_folder) + '/info.json')
 	
 	time_start = time.time()
+
+	kpiresults_set_true = KPIResultSetTrue(config.global_true_data_folder)
 	
 	for pdf in pdfs:
 		
@@ -195,9 +197,9 @@ def main():
 		cur_kpiresults = analyze_pdf(config.global_raw_pdf_folder + pdf, kpis, DEFAULT_YEAR, info_file_contents, wildcard_restrict_page='*', assume_conversion_done=False, force_parse_pdf=False) ### TODO:  Modify * in order to analyze specfic page, e.g.:  *00042 ###
 		kpiresults.extend(cur_kpiresults)
 		
-		true_kpiresults = KPIResultSetTrue(config.global_true_data_folder,pdf) 
-		true_kpiresults.evaluate(kpiresults.kpimeasures)
-		true_kpiresults.printEval()
+		kpiresults_set_true.load(pdf) 
+		kpiresults_set_true.evaluate(kpiresults.kpimeasures)
+		kpiresults_set_true.printEval()
 		
 		
 	    # add evaluation function here

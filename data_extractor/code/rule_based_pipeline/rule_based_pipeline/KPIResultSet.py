@@ -21,7 +21,7 @@ class KPIResultSet:
 		self.kpimeasures.extend(kpiresultset.kpimeasures)
 		
 	def to_ctab(self):
-		ctab = ConsoleTable(13)
+		ctab = ConsoleTable(14)
 		ctab.cells.append('KPI_ID')
 		ctab.cells.append('KPI_NAME')
 		ctab.cells.append('SRC_FILE')
@@ -35,6 +35,7 @@ class KPIResultSet:
 		ctab.cells.append('SCORE')
 		ctab.cells.append('UNIT')
 		ctab.cells.append('MATCH_TYPE')
+		ctab.cells.append("CLASSIFIED")
 		
 		for k in self.kpimeasures:
 			ctab.cells.append(str(k.kpi_id  	))
@@ -50,6 +51,7 @@ class KPIResultSet:
 			ctab.cells.append(str(k.score		))
 			ctab.cells.append(str(k.unit		))
 			ctab.cells.append(str(k.match_type	))
+			ctab.cells.append(str(k.correct))
 
 		return ctab
 	
