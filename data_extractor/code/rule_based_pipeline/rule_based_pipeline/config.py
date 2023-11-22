@@ -11,16 +11,19 @@ global_verbosity		= 1 ### TODO: Change verbosity here. verbosity 6-8 are good va
 global_exec_folder = r"./"
 
 # ***** gas and oil pdfs ***** :
-global_raw_pdf_folder   = r"raw_pdf/" 
+global_raw_pdf_folder   = r"raw_pdf_small/" 
 #global_raw_pdf_folder   = os.path.expanduser('~') + r"/raw_pdf/" 
 
 
 global_working_folder   = r"work_dir/"
 global_output_folder = r"output/"
 
+global_true_data_folder = r"true_data/"
+
+
 global_kpi_spec_path 	= ""  # if set, then command line argument will be ignored; example: "kpispec.txt"
 global_rendering_font_override = r"default_font.otf"
-global_approx_font_name		=r"default_font.otf" # use this font as approximation
+global_approx_font_name		=r"rule_based_pipeline/default_font.otf" # use this font as approximation
 global_max_identify_complex_items_timeout = 0.5 # seconds
 
 global_force_special_items_into_table = True

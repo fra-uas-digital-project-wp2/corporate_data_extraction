@@ -1513,7 +1513,9 @@ class HTMLPage:
 						span_font = None
 						if(int(gs[0]) in font_dict and font_dict[int(gs[0])] in font_url_dict):
 							span_font = ImageFont.truetype(fonts_dir + '/' + font_url_dict[font_dict[int(gs[0])]] , int(gs[1]))
+							#span_font = ImageFont.truetype(fonts_dir + '\\' + font_url_dict[font_dict[int(gs[0])]] , int(gs[1]))
 							item.font_file = fonts_dir + '/' + font_url_dict[font_dict[int(gs[0])]]
+							#item.font_file = fonts_dir + '\\' + font_url_dict[font_dict[int(gs[0])]]
 						else:
 							span_font = ImageFont.truetype(config.global_approx_font_name , int(gs[1]))
 							item.font_file = config.global_approx_font_name

@@ -1,0 +1,6 @@
+work_dir/
+raw_pdf/
+raw_pdf_medium/
+raw_pdf_small/
+output/
+__pycache__/

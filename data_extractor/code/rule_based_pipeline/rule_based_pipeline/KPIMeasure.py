@@ -26,6 +26,8 @@ class KPIMeasure:
 	unit		= None
 	match_type	= None
 	tmp			= None # for temporary values used by an Analyzer
+
+	correct 	= None
 	
 	
 	def __init__(self):
@@ -45,6 +47,7 @@ class KPIMeasure:
 		self.unit	  = ''
 		self.match_type = '' 
 		self.tmp = None
+		self.correct = None
 		
 	def set_file_path(self, file_path):
 		fp = file_path.replace('\\', '/')
