@@ -13,6 +13,7 @@ from TestData import *
 from DataImportExport import *
 from TestEvaluation import *
 from KPISpecs import *
+import pytest
 
 
 def test(pdf_file, wildcard):
@@ -423,18 +424,12 @@ def demo():
 
 def test_main():
     PDF_FILE = config.global_raw_pdf_folder + r'04_NOVATEK_AR_2016_ENG_11.pdf'
-
-    # test(PDF_FILE, "38")
-
     dir = test_load_json(PDF_FILE, "*")
-
     test_analyze_directory(dir)
 
 
 def test_evaluation():
     test_data = load_test_data(r'test_data/aggregated_complete_samples_new.csv')
-
-    # test_data.filter_kpis(by_source_file = ['NYSE_TOT_2015 annual.pdf', 'LUKOIL_ANNUAL_REPORT_2018_ENG'])
 
     test_data.filter_kpis(by_source_file=[
         'Aker-BP-Sustainability-Report-2019.pdf'  # KPIs are on pg: 84: 2009:665.1 ... 2013:575.7
@@ -445,16 +440,10 @@ def test_evaluation():
 
     print_big("Data-set", False)
     print(test_data)
-
     kpiresults = KPIResultSet.load_from_file(r'test_data/kpiresults_test_all_files_against_kpi_2_0.json')
-
     print_big("Kpi-Results", do_wait=False)
     print(kpiresults)
-
     print_big("Kpi-Evaluation", do_wait=False)
-
     kpis = test_prepare_kpispecs()
-
     test_eval = TestEvaluation.generate_evaluation(kpis, kpiresults, test_data)
-
     print(test_eval)

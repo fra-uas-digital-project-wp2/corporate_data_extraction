@@ -133,15 +133,12 @@ class TestEvaluation:
         return res
 
     def __repr__(self):
-
         return self.to_string(120, 5, ConsoleTable.FORMAT_CSV)
 
     @staticmethod
     def generate_evaluation(kpispecs, kpiresults, test_data):
         pdf_file_names = test_data.get_fixed_pdf_list()
-
         res = TestEvaluation()
-
         for kpispec in kpispecs:
             print_verbose(1, 'Evaluating KPI: kpi_id=' + str(kpispec.kpi_id) + ', kpi_name="' + kpispec.kpi_name + '"')
             for pdf_file_name in pdf_file_names:
