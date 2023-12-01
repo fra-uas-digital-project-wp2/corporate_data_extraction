@@ -217,10 +217,10 @@ class TestData:
 
         cnt = 0
         for f in file_paths:
-            fname = f[2] + '.' + f[3]
+            file_name = f[2] + '.' + f[3]
 
-            if fname != Format_Analyzer.cleanup_filename(fname):
-                print("Warning: Bad filename: '" + fname + "' - this file will be skipped")
+            if file_name != Format_Analyzer.cleanup_filename(file_name):
+                print("Warning: Bad filename: '" + file_name + "' - this file will be skipped")
                 continue
 
             sample = TestDataSample()
@@ -235,8 +235,8 @@ class TestData:
             sample.data_kpi_id = 0
             sample.data_relevant_paragraphs = 'N/A'
             sample.data_sector = 'N/A'
-            sample.data_source_file = fname
-            sample.fixed_source_file = fname
+            sample.data_source_file = file_name
+            sample.fixed_source_file = file_name
             sample.data_source_page = 0
             sample.data_year = 1900
 

@@ -9,13 +9,8 @@
 global_verbosity = 1  # TODO: Change verbosity here. verbosity 6-8 are good values for debugging without too much output ###
 
 global_exec_folder = r"./"
-
-# ***** gas and oil pdfs ***** :
-global_raw_pdf_folder = r"raw_pdf/"
-# global_raw_pdf_folder   = os.path.expanduser('~') + r"/raw_pdf/"
-
-
-global_working_folder = r"work_dir/"
+global_raw_pdf_folder = r"input/"
+global_working_folder = r"working_folder/"
 global_output_folder = r"output/"
 
 global_kpi_spec_path = ""  # if set, then command line argument will be ignored; example: "kpispec.txt"

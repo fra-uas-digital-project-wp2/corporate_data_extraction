@@ -41,8 +41,8 @@ class KPIResultSet:
             ctab.cells.append(str(k.page_nm))
             ctab.cells.append(str(k.item_is))
             ctab.cells.append(str(k.pos_x))
-            ctab.cells.append(str(k.pos_y	))
-            ctab.cells.append(str(k.raw_txt		))
+            ctab.cells.append(str(k.pos_y))
+            ctab.cells.append(str(k.raw_txt	))
             ctab.cells.append(str(k.year		))
             ctab.cells.append(str(k.value		))
             ctab.cells.append(str(k.score		))
@@ -69,7 +69,7 @@ class KPIResultSet:
 
     def save_to_csv_file(self, csv_file):
         ctab = self.to_ctab()
-        csv_str = ctab.to_string(use_formt= ConsoleTable.FORMAT_CSV)
+        csv_str = ctab.to_string(use_format=ConsoleTable.FORMAT_CSV)
 
         f = open(csv_file, "w", encoding="utf-8")
         f.write(csv_str)

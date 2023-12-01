@@ -93,33 +93,10 @@ def main():
 
     parser = argparse.ArgumentParser(description='Rule-based KPI extraction')
     # Add the arguments
-    parser.add_argument('--raw_pdf_folder',
-                        type=str,
-                        default=None,
-                        help='Folder where PDFs are stored')
-    parser.add_argument('--working_folder',
-                        type=str,
-                        default=None,
-                        help='Folder where working files are stored')
-    parser.add_argument('--output_folder',
-                        type=str,
-                        default=None,
-                        help='Folder where output is stored')
-    parser.add_argument('--verbosity',
-                        type=int,
-                        default=1,
-                        help='Verbosity level (0=shut up)')
-    args = parser.parse_args()
-    config.global_raw_pdf_folder = remove_trailing_slash(
-        get_input_variable(args.raw_pdf_folder, "What is the raw pdf folder?")).replace('\\', '/') + r'/'
-    config.global_working_folder = remove_trailing_slash(
-        get_input_variable(args.working_folder, "What is the working folder?")).replace('\\', '/') + r'/'
-    config.global_output_folder = remove_trailing_slash(
-        get_input_variable(args.output_folder, "What is the output folder?")).replace('\\', '/') + r'/'
-    config.global_verbosity = args.verbosity
-
-    os.makedirs(config.global_working_folder, exist_ok=True)
-    os.makedirs(config.global_output_folder, exist_ok=True)
+    parser.add_argument('--raw_pdf_folder', type=str, default='input', help='Folder where PDFs are stored')
+    parser.add_argument('--working_folder', type=str, default='working_folder', help='Folder where working files are stored')
+    parser.add_argument('--output_folder', type=str, default='output', help='Folder where output is stored')
+    parser.add_argument('--verbosity', type=int, default=1, help='Verbosity level (0=shut up)')
 
     # fix config.global_exec_folder and config.global_rendering_font_override
     path = ''
@@ -137,7 +114,7 @@ def main():
     print_verbose(1, "Using config.global_working_folder=" + config.global_working_folder)
     print_verbose(1, "Using config.global_output_folder=" + config.global_output_folder)
     print_verbose(1, "Using config.global_verbosity=" + str(config.global_verbosity))
-    print_verbose(5, "Using config.global_rendering_font_override=" + config.global_rendering_font_override)
+    print_verbose(1, "Using config.global_rendering_font_override=" + config.global_rendering_font_override)
 
     # test_data = load_test_data(r'test_data/aggregated_complete_samples_new.csv')
     test_data = generate_dummy_test_data()
@@ -155,14 +132,13 @@ def main():
     pdfs = test_data.get_fixed_pdf_list()
 
     print_verbose(1, 'Related (fixed) PDFs: ' + str(pdfs) + ', in total : ' + str(len(pdfs)))
-    # return # TODO: Uncomment this line, to return immediately, after PDF list has been shown. ###
+    # return # TODO: Uncomment this line, to return immediately, after PDF list has been shown.
 
     kpis = test_prepare_kpispecs()  # TODO: In the future, KPI specs should be loaded from "nicer" implemented source, e.g., JSON file definition
 
     overall_kpi_results = KPIResultSet()
 
-    info_file_contents = DataImportExport.load_info_file_contents(
-        remove_trailing_slash(config.global_working_folder) + '/info.json')
+    info_file_contents = DataImportExport.load_info_file_contents(remove_trailing_slash(config.global_working_folder) + '/info.json')
 
     time_start = time.time()
 
@@ -185,8 +161,7 @@ def main():
     overall_kpi_results.save_to_csv_file(config.global_output_folder + r'kpiresults_tmp.csv')
 
     total_time = time_finish - time_start
-    print_verbose(1, "Total run-time: " + str(total_time) + " sec ( " + str(
-        total_time / max(len(pdfs), 1)) + " sec per PDF)")
+    print_verbose(1, "Total run-time: " + str(total_time) + " sec ( " + str(total_time / max(len(pdfs), 1)) + " sec per PDF)")
 
 
 main()
