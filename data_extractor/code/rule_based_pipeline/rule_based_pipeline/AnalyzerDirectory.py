@@ -50,17 +50,6 @@ class AnalyzerDirectory:
                 self.analyzer_page.append(AnalyzerPage(p_mult, default_year))
         self.default_year = default_year
 
-    """
-    TODO : Probably implementation not necessary
-    def adjust_scores_by_value_preference(self, lst, kpi_specs):
-        if(kpi_specs.value_preference == 1.0 or len(lst) < 2):
-            return lst
-
-        min_val = 
-        for k in lst:
-            ...
-    """
-
     def fix_src_name(self, kpi_measures):
         """
         Fixes the source file name for a list of KPI measures.

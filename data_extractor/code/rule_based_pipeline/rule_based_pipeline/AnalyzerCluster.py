@@ -26,9 +26,9 @@ class AnalyzerCluster:
         bad_page (bool): Indicates if the page is considered bad.
 
     Methods:
-        find_kpis_single_node(kpispecs, cluster): Finds KPIs within a single cluster node.
-        find_kpis_rec(kpispecs, cluster): Recursively finds KPIs within the cluster.
-        find_kpis(kpispecs): Finds KPIs within the entire HTML cluster.
+        find_kpis_single_node(kpi_specs, cluster): Finds KPIs within a single cluster node.
+        find_kpis_rec(kpi_specs, cluster): Recursively finds KPIs within the cluster.
+        find_kpis(kpi_specs): Finds KPIs within the entire HTML cluster.
     """
     html_cluster = None
     html_page = None
@@ -44,7 +44,6 @@ class AnalyzerCluster:
             html_cluster (HTMLCluster): The HTML cluster.
             html_page (HTMLPage): The HTML page.
             default_year: The default year value.
-
         """
         self.html_cluster = html_cluster
         self.html_page = html_page
@@ -52,14 +51,12 @@ class AnalyzerCluster:
         self.default_year = default_year
         self.bad_page = False
 
-    def find_kpis_single_node(self, kpispecs, cluster):
+    def find_kpis_single_node(self, kpi_specs, cluster):
         """
         Finds KPIs within a single cluster node.
-
         Args:
-            kpispecs (KPISpecs): The KPI specifications.
+            kpi_specs (KPISpecs): The KPI specifications.
             cluster (HTMLCluster): The HTML cluster.
-
         Returns:
             KPIMeasure or None: The KPI measure if found, otherwise None.
         """
@@ -83,7 +80,7 @@ class AnalyzerCluster:
             for i in range(len(idx_list)):
                 sub_idx_list = idx_list[0:i] + idx_list[i + 1:len(idx_list)]
                 sub_txt = get_txt_by_idx_list(sub_idx_list)
-                txt_match, score = kpispecs.match_nodes([sub_txt])
+                txt_match, score = kpi_specs.match_nodes([sub_txt])
                 if score >= base_score and txt_match:
                     needed.append(False)
                 else:
@@ -146,7 +143,7 @@ class AnalyzerCluster:
 
         # get text
 
-        txt_match, score = kpispecs.match_nodes([txt])
+        txt_match, score = kpi_specs.match_nodes([txt])
         print_verbose(5, '---> txt base_score=' + str(score))
         if not txt_match:
             print_verbose(5, '---> No match')
@@ -155,7 +152,7 @@ class AnalyzerCluster:
         idx_list_refined_txt = refine_txt_items(idx_list, score)
         txt_refined = get_txt_by_idx_list(idx_list_refined_txt)
 
-        txt_match, score = kpispecs.match_nodes([txt_refined])
+        txt_match, score = kpi_specs.match_nodes([txt_refined])
         print_verbose(5, '------> After refinement: ' + txt_refined)
         print_verbose(5, '------> txt score=' + str(score))
 
@@ -164,8 +161,8 @@ class AnalyzerCluster:
         # get value
 
         raw_value_idx, raw_value, value_rect = find_nearest_matching_str(idx_list, base_point_x, base_point_y,
-                                                                         kpispecs.match_value,
-                                                                         not kpispecs.value_must_be_year)  # TODO: Maybe not always exclude years ?
+                                                                         kpi_specs.match_value,
+                                                                         not kpi_specs.value_must_be_year)  # TODO: Maybe not always exclude years ?
         if raw_value is None:
             print_verbose(5, '---> Value missmatch')
             return None  # value missmatch
@@ -173,16 +170,16 @@ class AnalyzerCluster:
         print_verbose(5, '------> raw_value: ' + str(raw_value))
 
         # get unit
-        txt_unit_matched = kpispecs.match_unit(txt)
+        txt_unit_matched = kpi_specs.match_unit(txt)
         if not txt_unit_matched:
             print_verbose(5, '---> Unit not matched')
             return None  # unit not matched
 
         unit_str = ''
         unit_idx = None
-        if kpispecs.has_unit():
+        if kpi_specs.has_unit():
             unit_idx, unit_str, foo = find_nearest_matching_str(idx_list, base_point_x, base_point_y,
-                                                                kpispecs.match_unit,
+                                                                kpi_specs.match_unit,
                                                                 True)  # TODO: Maybe not always exclude years ?
             if unit_idx is None:
                 print_verbose(5, '---> Unit not matched in individual item')
@@ -220,7 +217,7 @@ class AnalyzerCluster:
         final_txt = get_txt_by_idx_list(new_idx_list)
         print_verbose(5, '------> Final text: "' + str(final_txt) + '"')
 
-        txt_match, final_txt_score = kpispecs.match_nodes([final_txt])
+        txt_match, final_txt_score = kpi_specs.match_nodes([final_txt])
         print_verbose(5, '---> txt final_score=' + str(final_txt_score))
         if not txt_match:
             print_verbose(5, '---> No match')
@@ -230,7 +227,7 @@ class AnalyzerCluster:
         anywhere_match_score = 9999999
         for idx in new_idx_list:
             rect.grow(self.items[idx].get_rect())
-            anywhere_match, anywhere_match_score_cur = kpispecs.match_anywhere_on_page(self.html_page, idx)
+            anywhere_match, anywhere_match_score_cur = kpi_specs.match_anywhere_on_page(self.html_page, idx)
             anywhere_match_score = min(anywhere_match_score, anywhere_match_score_cur)
             if not anywhere_match:
                 print_verbose(5, '---> anywhere-match was not matched on this page. No other match possible.')
@@ -238,8 +235,8 @@ class AnalyzerCluster:
                 return None
 
         kpi_measure = KPIMeasure()
-        kpi_measure.kpi_id = kpispecs.kpi_id
-        kpi_measure.kpi_name = kpispecs.kpi_name
+        kpi_measure.kpi_id = kpi_specs.kpi_id
+        kpi_measure.kpi_name = kpi_specs.kpi_name
         kpi_measure.src_file = 'TODO'
         kpi_measure.page_num = self.html_page.items[raw_value_idx].page_num
         kpi_measure.item_ids = idx_list
@@ -247,7 +244,7 @@ class AnalyzerCluster:
         kpi_measure.pos_y = value_rect.y0  # (rect.y0+rect.y1)*0.5
         kpi_measure.raw_txt = raw_value
         kpi_measure.year = year
-        kpi_measure.value = kpispecs.extract_value(raw_value)
+        kpi_measure.value = kpi_specs.extract_value(raw_value)
         kpi_measure.score = final_txt_score + anywhere_match_score
         kpi_measure.unit = unit_str
         kpi_measure.match_type = 'AC.default'
@@ -256,40 +253,36 @@ class AnalyzerCluster:
 
         return kpi_measure
 
-    def find_kpis_rec(self, kpispecs, cluster):
+    def find_kpis_rec(self, kpi_specs, cluster):
         """
         Recursively finds KPIs within the cluster.
-
         Args:
-            kpispecs (KPISpecs): The KPI specifications.
+            kpi_specs (KPISpecs): The KPI specifications.
             cluster (HTMLCluster): The HTML cluster.
-
         Returns:
             list: List of KPI measures found within the cluster.
         """
-        cur_kpi = self.find_kpis_single_node(kpispecs, cluster)
+        cur_kpi = self.find_kpis_single_node(kpi_specs, cluster)
 
         res = []
         if cur_kpi is not None:
             res = [cur_kpi]
 
         for c in cluster.children:
-            res.extend(self.find_kpis_rec(kpispecs, c))
+            res.extend(self.find_kpis_rec(kpi_specs, c))
 
         return res
 
-    def find_kpis(self, kpispecs):
+    def find_kpis(self, kpi_specs):
         """
         Finds KPIs within the entire HTML cluster.
-
         Args:
-            kpispecs (KPISpecs): The KPI specifications.
-
+            kpi_specs (KPISpecs): The KPI specifications.
         Returns:
             list: List of KPI measures found within the HTML cluster.
         """
         if self.html_cluster is None:
             return []
 
-        res = self.find_kpis_rec(kpispecs, self.html_cluster)
+        res = self.find_kpis_rec(kpi_specs, self.html_cluster)
         return res

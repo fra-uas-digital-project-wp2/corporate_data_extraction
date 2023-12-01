@@ -117,10 +117,6 @@ def get_html_out_dir(fname):
     return config.global_working_folder + r'html/' + fname[(fname.rfind(r'/') + 1):] + r'.html_dir'
 
 
-def analyze_pdf(fname):
-    pdf_to_html(fname, get_html_out_dir(fname))
-
-
 def save_txt_to_file(txt, fname):
     with open(fname, "w", encoding="utf-8") as text_file:
         text_file.write(txt)
