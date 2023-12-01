@@ -36,18 +36,18 @@ class KPIResultSet:
 
         for k in self.kpimeasures:
             ctab.cells.append(str(k.kpi_id))
-            ctab.cells.append(str(k.kpi_nae))
-            ctab.cells.append(str(k.src_fie))
-            ctab.cells.append(str(k.page_nm))
-            ctab.cells.append(str(k.item_is))
+            ctab.cells.append(str(k.kpi_name))
+            ctab.cells.append(str(k.src_file))
+            ctab.cells.append(str(k.page_num))
+            ctab.cells.append(str(k.item_ids))
             ctab.cells.append(str(k.pos_x))
             ctab.cells.append(str(k.pos_y))
-            ctab.cells.append(str(k.raw_txt	))
-            ctab.cells.append(str(k.year		))
-            ctab.cells.append(str(k.value		))
-            ctab.cells.append(str(k.score		))
-            ctab.cells.append(str(k.unit		))
-            ctab.cells.append(str(k.match_tye	))
+            ctab.cells.append(str(k.raw_txt))
+            ctab.cells.append(str(k.year))
+            ctab.cells.append(str(k.value))
+            ctab.cells.append(str(k.score))
+            ctab.cells.append(str(k.unit))
+            ctab.cells.append(str(k.match_type))
 
         return ctab
 
