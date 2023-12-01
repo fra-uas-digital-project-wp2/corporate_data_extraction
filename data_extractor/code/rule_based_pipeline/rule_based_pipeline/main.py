@@ -12,11 +12,11 @@ from TestData import *
 from DataImportExport import *
 import config
 from data_extractor.code.rule_based_pipeline.rule_based_pipeline.test import test_prepare_kpispecs, load_test_data
-from KPIResultSetTrue import *
+
 
 def generate_dummy_test_data():
     test_data = TestData()
-    test_data.generate_dummy_test_data(config.global_raw_pdf_folder, '*')
+    test_data.generate_dummy_test_data(config.global_input_folder, '*')
     # print("DATA-SET:")
     # print(test_data)
     return test_data
@@ -93,10 +93,10 @@ def main():
 
     parser = argparse.ArgumentParser(description='Rule-based KPI extraction')
     # Add the arguments
-    parser.add_argument('--raw_pdf_folder', type=str, default='input', help='Folder where PDFs are stored')
-    parser.add_argument('--working_folder', type=str, default='working_folder', help='Folder where working files are stored')
-    parser.add_argument('--output_folder', type=str, default='output', help='Folder where output is stored')
-    parser.add_argument('--verbosity', type=int, default=1, help='Verbosity level (0=shut up)')
+    parser.add_argument('--raw_pdf_folder', type=str, default=config.global_input_folder, help='Folder where PDFs are stored')
+    parser.add_argument('--working_folder', type=str, default=config.global_working_folder, help='Folder where working files are stored')
+    parser.add_argument('--output_folder', type=str, default=config.global_output_folder, help='Folder where output is stored')
+    parser.add_argument('--verbosity', type=int, default=config.global_verbosity, help='Verbosity level (0=shut up)')
 
     # fix config.global_exec_folder and config.global_rendering_font_override
     path = ''
@@ -110,7 +110,7 @@ def main():
     config.global_rendering_font_override = path + r'/' + config.global_rendering_font_override
 
     print_verbose(1, "Using config.global_exec_folder=" + config.global_exec_folder)
-    print_verbose(1, "Using config.global_raw_pdf_folder=" + config.global_raw_pdf_folder)
+    print_verbose(1, "Using config.global_raw_pdf_folder=" + config.global_input_folder)
     print_verbose(1, "Using config.global_working_folder=" + config.global_working_folder)
     print_verbose(1, "Using config.global_output_folder=" + config.global_output_folder)
     print_verbose(1, "Using config.global_verbosity=" + str(config.global_verbosity))
@@ -144,7 +144,7 @@ def main():
 
     for pdf in pdfs:
         kpi_results = KPIResultSet(kpimeasures=[])
-        cur_kpi_results = analyze_pdf(config.global_raw_pdf_folder + pdf, kpis, DEFAULT_YEAR, info_file_contents,
+        cur_kpi_results = analyze_pdf(config.global_input_folder + pdf, kpis, DEFAULT_YEAR, info_file_contents,
                                       wildcard_restrict_page='*', assume_conversion_done=False,
                                       force_parse_pdf=False)  # TODO:  Modify * in order to analyze specific page, e.g.:  *00042 ###
         kpi_results.extend(cur_kpi_results)

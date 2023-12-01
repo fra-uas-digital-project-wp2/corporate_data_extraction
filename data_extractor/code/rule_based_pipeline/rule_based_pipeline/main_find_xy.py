@@ -15,7 +15,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 def generate_dummy_test_data():
     test_data = TestData()
-    test_data.generate_dummy_test_data(config.global_raw_pdf_folder, '*')
+    test_data.generate_dummy_test_data(config.global_input_folder, '*')
     return test_data
 
 
@@ -110,7 +110,7 @@ def modify_csv(csv, info_file_contents):
     for c in range(len(csvPD)):  # check columns
         # print(str(c) + str(csvPD['PDF_NAME'][c]))
         if str(csvPD['POS_X'][c]) == "nan" or str(csvPD['POS_Y'][c]) == "nan":
-            coordis = analyze_pdf(config.global_raw_pdf_folder + str(csvPD['PDF_NAME'][c]), int(csvPD['PAGE'][c]),
+            coordis = analyze_pdf(config.global_input_folder + str(csvPD['PDF_NAME'][c]), int(csvPD['PAGE'][c]),
                                   str(csvPD['ANSWER_RAW'][c]), info_file_contents, assume_conversion_done=False,
                                   force_parse_pdf=False)
             print_verbose(2, "coord:")
@@ -151,7 +151,7 @@ def main():
                         help='Verbosity level (0=shut up)')
 
     args = parser.parse_args()
-    config.global_raw_pdf_folder = remove_trailing_slash(
+    config.global_input_folder = remove_trailing_slash(
         get_input_variable(args.raw_pdf_folder, "What is the raw pdf folder?")).replace('\\', '/') + r'/'
     config.global_working_folder = remove_trailing_slash(
         get_input_variable(args.working_folder, "What is the working folder?")).replace('\\', '/') + r'/'
@@ -176,7 +176,7 @@ def main():
     config.global_rendering_font_override = path + r'/' + config.global_rendering_font_override
 
     print_verbose(1, "Using config.global_exec_folder=" + config.global_exec_folder)
-    print_verbose(1, "Using config.global_raw_pdf_folder=" + config.global_raw_pdf_folder)
+    print_verbose(1, "Using config.global_raw_pdf_folder=" + config.global_input_folder)
     print_verbose(1, "Using config.global_working_folder=" + config.global_working_folder)
     print_verbose(1, "Using config.global_output_folder=" + config.global_output_folder)
     print_verbose(1, "Using config.global_verbosity=" + str(config.global_verbosity))
