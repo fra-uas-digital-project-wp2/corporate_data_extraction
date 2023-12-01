@@ -5,12 +5,15 @@
 # Date   : 05.08.2020
 #
 # Note: This file contains procedure used for testing only.
-#
 # ============================================================================================================================
 
 
 from AnalyzerDirectory import *
+from TestData import *
+from DataImportExport import *
 from TestEvaluation import *
+from KPISpecs import *
+import pytest
 
 
 def test(pdf_file, wildcard):
@@ -22,7 +25,6 @@ def test(pdf_file, wildcard):
 
 def test_convert_pdf(pdf_file):
     HTMLDirectory.convert_pdf_to_html(pdf_file)
-
     dir = HTMLDirectory()
     dir.parse_html_directory(get_html_out_dir(pdf_file), r'page*.html')
     dir.save_to_dir(get_html_out_dir(pdf_file))
@@ -31,13 +33,7 @@ def test_convert_pdf(pdf_file):
 def test_load_json(pdf_file, wildcard):
     dir = HTMLDirectory()
     dir.load_from_dir(get_html_out_dir(pdf_file), 'jpage' + str(wildcard) + '.json')
-    # dir.render_to_png(get_html_out_dir(pdf_file), get_html_out_dir(pdf_file))
-
     return dir
-
-
-# def test_save_json(dir):
-#     dir.save_to_dir(get_html_out_dir(pdf_file))
 
 
 def test_print_all_clusters(htmldir):
@@ -57,21 +53,6 @@ def test_prepare_kpispecs():
         kpi.kpi_name = 'Scope 1 / Direct total GHGs emissions'
 
         # Match paragraphs
-
-        '''
-		kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(pattern_raw='.*(^|[^a-z])(ghg)\semission[s]?.*',score=2000 ,matching_mode=MATCHING_CAN_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay = 0, letter_decay_hl = 20, letter_decay_disregard = len('(GHG) emissions')))
-			
-		kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(pattern_raw='.*(gas|(gas).*emissions?))',score=2000 ,matching_mode=MATCHING_MUST_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay = 0, letter_decay_hl = 20, letter_decay_disregard = len('(GHG) emissions')))
-		
-		kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(pattern_raw='.*(^|[^a-z])(gas|ghg|(ghg)).*emissions.*CO2\s?equivalent.*',score=10000 ,matching_mode=MATCHING_MUST_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay = 0, letter_decay_hl = 20, letter_decay_disregard = len('(GHG) emissions')))
-			
-		kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(pattern_raw='.*(^|[^a-z])(gas|ghg|(ghg)).*emissions.*(totaled|summed)?.*(equivalent|tonnes)?(CO2)e?.*(equivalent|tonnes)?.*',score=12000 ,matching_mode=MATCHING_MUST_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay = 0, letter_decay_hl = 20, letter_decay_disregard = len('(GHG) emissions')))
-		
-		kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(pattern_raw='.\d+\s*(thousand|hundred|million).*(gas|ghg|(ghg)).*emissions.*?(totaled|summed)? ',score=12000 ,matching_mode=MATCHING_MUST_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay = 0, letter_decay_hl = 20, letter_decay_disregard = len('(GHG) emissions')))
-		
-		kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(pattern_raw='.*\s*(thousand|hundred|million)?.*(gas|ghg|(ghg)).*emissions.*(2017)?(totaled|summed|to)?\d+',score=8000 ,matching_mode=MATCHING_MUST_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay = 0, letter_decay_hl = 20, letter_decay_disregard = len('(GHG) emissions')))
-		'''
-
         kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(
             pattern_raw='.*(^|[^a-z])(greenhouse)?.*(gas|ghg|(ghg)|atmospheric|co2).*emissions?.*', score=7000,
             matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.1, case_sensitive=False, multi_match_decay=0,
@@ -91,7 +72,6 @@ def test_prepare_kpispecs():
             pattern_raw='.*(^|[^a-z])(greenhouse)?.*(gas|ghg|(ghg)|atmospheric|co2|combustion.*fuels?).*emissions?.*',
             score=7000, matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.1, case_sensitive=False, multi_match_decay=0,
             letter_decay_hl=20, letter_decay_disregard=len('gas emissions')))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*(^|[^a-z])combustion.*fuels?.*', score=6000,
                                     matching_mode=MATCHING_CAN_INCLUDE, score_decay=0.1, case_sensitive=False,
@@ -102,17 +82,14 @@ def test_prepare_kpispecs():
             pattern_raw='.*(^|[^a-z])(greenhouse)?.*(gas|ghg|(ghg)|atmospheric).*(direct)(emissions?)?.*', score=9000,
             matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay=0,
             letter_decay_hl=15, letter_decay_disregard=len('gas direct')))
-
         kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(
             pattern_raw='.*(^|[^a-z])(greenhouse)?.*(gas|ghg|(ghg)|atmospheric).*direct.*scope[^a-zA-Z0-9]?1(emissions?)?.*',
             score=12000, matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay=0,
             letter_decay_hl=30, letter_decay_disregard=len('direct scope 1')))
-
         kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(
             pattern_raw='.*(^|[^a-z])(greenhouse)?.*direct.*(gas|ghg|(ghg)|atmospheric).*scope[^a-zA-Z0-9]?1(emissions?)?.*',
             score=12000, matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay=0,
             letter_decay_hl=30, letter_decay_disregard=len('direct scope 1')))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*scope\s1.*', score=6000, matching_mode=MATCHING_MAY_INCLUDE,
                                     score_decay=0.8, case_sensitive=False, multi_match_decay=0, letter_decay_hl=30,
@@ -122,25 +99,20 @@ def test_prepare_kpispecs():
             pattern_raw='.*(^|[^a-z])(greenhouse)?.*(gas|ghg|(ghg)|atmospheric).*direct.*scope[^a-zA-Z0-9]?1(emissions?)?.*m.*t',
             score=12000, matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay=0,
             letter_decay_hl=30, letter_decay_disregard=len('proven reserves of oil and gas')))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*scope[^a-zA-Z0-9]?2.*', score=1, matching_mode=MATCHING_MUST_EXCLUDE,
                                     score_decay=0, case_sensitive=False, multi_match_decay=0, letter_decay_hl=10,
                                     letter_decay_disregard=0, count_if_matched=False,
                                     allow_matching_against_concat_txt=False))
 
-        # kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(pattern_raw='.*group.*', score=1, matching_mode=MATCHING_MUST_EXCLUDE, score_decay=0, case_sensitive=False, multi_match_decay = 0, letter_decay_hl = 10, letter_decay_disregard = 0, count_if_matched = False, allow_matching_against_concat_txt = False))
-
         kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(
             pattern_raw='.*(^|[^a-z])(((gas|ghg|(ghg)|atmospheric)|direct).*emissions?|scope[^a-zA-Z0-9]?1).*(million\s? tonnes|co2[^a-zA-Z0-9]?eq)',
             score=12000, matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay=0,
             letter_decay_hl=30, letter_decay_disregard=len('proven reserves of oil and gas')))
-
         kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(
             pattern_raw='.*(^|[^a-z])((gas|ghg|(ghg)|atmospheric)|direct).*(million\s? tonnes|co2[^a-zA-Z0-9]?eq).*',
             score=12000, matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay=0,
             letter_decay_hl=30, letter_decay_disregard=len('proven reserves of oil and gas')))
-
         kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(
             pattern_raw='.*(^|[^a-z])direct.*(gas|ghg|(ghg)).*(million\s? tonnes|co2[^a-zA-Z0-9]?(eq|equivalent)).*',
             score=12000, matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay=0,
@@ -151,13 +123,11 @@ def test_prepare_kpispecs():
                                     matching_mode=MATCHING_MUST_EXCLUDE, score_decay=0, case_sensitive=False,
                                     multi_match_decay=0, letter_decay_hl=10, letter_decay_disregard=0,
                                     count_if_matched=False, allow_matching_against_concat_txt=False))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*scope[^a-zA-Z0-9]?1,?[^a-zA-Z0-9]?2.*', score=1,
                                     matching_mode=MATCHING_MUST_EXCLUDE, score_decay=0, case_sensitive=False,
                                     multi_match_decay=0, letter_decay_hl=10, letter_decay_disregard=0,
                                     count_if_matched=False, allow_matching_against_concat_txt=False))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*scope[^a-zA-Z0-9]?1.*relative.*', score=1,
                                     matching_mode=MATCHING_MUST_EXCLUDE, score_decay=0, case_sensitive=False,
@@ -168,7 +138,6 @@ def test_prepare_kpispecs():
             pattern_raw='.*(^|[^a-z])(greenhouse)?.*^(?=.*(gas|ghg|(ghg)|atmospheric))(?=.*direct)(?=.*scope[^a-zA-Z0-9]?1).*$(emissions?)?.*',
             score=12000, matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay=0,
             letter_decay_hl=30, letter_decay_disregard=len('proven reserves of oil and gas')))
-
         kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(
             pattern_raw='.*(^|[^a-z])(greenhouse)?.*^(?=.*(gas|ghg|(ghg)|atmospheric))(?=.*direct)(?=.*operated).*$(emissions?)?.*',
             score=6000, matching_mode=MATCHING_CAN_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay=0,
@@ -178,7 +147,6 @@ def test_prepare_kpispecs():
             pattern_raw='.*(^|[^a-z])(greenhouse)?.*^(?=.*(gas|ghg|(ghg)|atmospheric))(?=.*direct).*$(emissions?)?.*',
             score=12000, matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay=0,
             letter_decay_hl=30, letter_decay_disregard=len('proven reserves of oil and gas')))
-
         kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(
             pattern_raw='.*(^|[^a-z])(greenhouse)?.*^(?=.*(gas|ghg|(ghg)|atmospheric))(?=.*scope[^a-zA-Z0-9]?1).*$(emissions?)?.*',
             score=12000, matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.8, case_sensitive=False, multi_match_decay=0,
@@ -195,7 +163,6 @@ def test_prepare_kpispecs():
                                     score_decay=0.8, case_sensitive=False, multi_match_decay=1, letter_decay_hl=10,
                                     letter_decay_disregard=len('total indirect ghg  scope-2')))
 
-        #     .*Direct NO.*emissions.*
         kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(pattern_raw='.*direct no.*emissions.*', score=1,
                                                                  matching_mode=MATCHING_MUST_EXCLUDE, score_decay=0,
                                                                  case_sensitive=False, multi_match_decay=0,
@@ -205,8 +172,6 @@ def test_prepare_kpispecs():
         kpi.unit_regex_match_list.append(
             KPISpecs.GeneralRegExMatch(pattern_raw='.*(ton|mn|million|kt|m t|co 2|co.*emission).*',
                                        case_sensitive=False))
-
-        # kpi.unit_regex_match_list.append(KPISpecs.GeneralRegExMatch(pattern_raw='.*((b|m)illions?.*(tons?|tonnes?).*CO2\s*equivalent|MteCO2e|mil\s*t\s*eq|(b|m)illions?\/teq|emissions.*CO2\s*equivalent).*',case_sensitive=False))
 
         kpi.value_must_be_numeric = True
 
@@ -256,42 +221,35 @@ def test_prepare_kpispecs():
             KPISpecs.DescRegExMatch(pattern_raw='.*s.*cope( |-)2.*', score=8000, matching_mode=MATCHING_MAY_INCLUDE,
                                     score_decay=0.8, case_sensitive=False, multi_match_decay=0, letter_decay_hl=20,
                                     letter_decay_disregard=len('total indirect ghg  scope-2 ')))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*indirect.*ghg.*', score=3000, matching_mode=MATCHING_MAY_INCLUDE,
                                     score_decay=0.8, case_sensitive=False, multi_match_decay=1, letter_decay_hl=20,
                                     letter_decay_disregard=len('total indirect ghg  scope-2 ')))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*ghg.*', score=3000, matching_mode=MATCHING_CAN_INCLUDE,
                                     score_decay=0.8, case_sensitive=False, multi_match_decay=1, letter_decay_hl=20,
                                     letter_decay_disregard=len('total indirect ghg  scope-2 ')))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*indirect.*', score=3000, matching_mode=MATCHING_CAN_INCLUDE,
                                     score_decay=0.8, case_sensitive=False, multi_match_decay=1, letter_decay_hl=20,
                                     letter_decay_disregard=len('total indirect ghg  scope-2 ')))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*co 2.*', score=3000, matching_mode=MATCHING_MAY_INCLUDE,
                                     score_decay=0.8, case_sensitive=False, multi_match_decay=0, letter_decay_hl=20,
                                     letter_decay_disregard=len('CO2')))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*market.*', score=3000, matching_mode=MATCHING_CAN_INCLUDE,
                                     score_decay=0.8, case_sensitive=False, multi_match_decay=1, letter_decay_hl=20,
                                     letter_decay_disregard=len('total indirect ghg  scope 2  ')))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*electricity.*', score=500, matching_mode=MATCHING_CAN_INCLUDE,
                                     score_decay=0.8, case_sensitive=False, multi_match_decay=1, letter_decay_hl=20,
                                     letter_decay_disregard=len('total indirect ghg  scope-2')))
-
-        kpi.desc_regex_match_list.append(
-            KPISpecs.DescRegExMatch(pattern_raw='.*indirect.*emissions.*', score=3000,
-                                    matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.8, case_sensitive=False,
-                                    multi_match_decay=1, letter_decay_hl=20,
-                                    letter_decay_disregard=len('total indirect ghg  scope-2 ')))  # by Lei
+        kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(pattern_raw='.*indirect.*emissions.*', score=3000,
+                                                                 matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.8,
+                                                                 case_sensitive=False, multi_match_decay=1,
+                                                                 letter_decay_hl=20, letter_decay_disregard=len(
+                'total indirect ghg  scope-2 ')))  # by Lei
 
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*(total|combine).*', score=1500, matching_mode=MATCHING_CAN_INCLUDE,
@@ -305,13 +263,11 @@ def test_prepare_kpispecs():
                                     case_sensitive=False, multi_match_decay=0, letter_decay_hl=10,
                                     letter_decay_disregard=0, count_if_matched=False,
                                     allow_matching_against_concat_txt=False))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*s.*cope( |-)3.*', score=1, matching_mode=MATCHING_MUST_EXCLUDE,
                                     score_decay=0, case_sensitive=False, multi_match_decay=0, letter_decay_hl=10,
                                     letter_decay_disregard=0, count_if_matched=False,
                                     allow_matching_against_concat_txt=False))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*(upstream|refin).*', score=1, matching_mode=MATCHING_MUST_EXCLUDE,
                                     score_decay=0, case_sensitive=False, multi_match_decay=0, letter_decay_hl=10,
@@ -328,17 +284,14 @@ def test_prepare_kpispecs():
             general_match=KPISpecs.GeneralRegExMatch(pattern_raw='.*(environment|emission).*', case_sensitive=False),
             distance_mode=DISTANCE_MOD_EUCLID, score=100, matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.9,
             multi_match_decay=0.5, letter_decay_hl=5, letter_decay_disregard=len('production')))
-
         kpi.anywhere_regex_match_list.append(KPISpecs.AnywhereRegExMatch(
             general_match=KPISpecs.GeneralRegExMatch(pattern_raw='.*total.*', case_sensitive=False),
             distance_mode=DISTANCE_MOD_EUCLID, score=100, matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.9,
             multi_match_decay=0.5, letter_decay_hl=5, letter_decay_disregard=len('production')))
-
         kpi.anywhere_regex_match_list.append(KPISpecs.AnywhereRegExMatch(
             general_match=KPISpecs.GeneralRegExMatch(pattern_raw='.*tons.*co.*', case_sensitive=False),
             distance_mode=DISTANCE_MOD_EUCLID, score=100, matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.05,
             multi_match_decay=0.01, letter_decay_hl=5, letter_decay_disregard=len('tons co2')))  # by Lei
-
         kpi.anywhere_regex_match_list.append(KPISpecs.AnywhereRegExMatch(
             general_match=KPISpecs.GeneralRegExMatch(pattern_raw='.*million metric.*', case_sensitive=False),
             distance_mode=DISTANCE_MOD_EUCLID, score=200, matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.05,
@@ -350,30 +303,22 @@ def test_prepare_kpispecs():
         return kpi
 
     def prepare_kpi_8_scope3_ghg_emissions():
-        # KPI 8 = Scope 3 Upstream Energy indirect total GHGs emissions
         kpi = KPISpecs()
         kpi.kpi_id = 8
         kpi.kpi_name = 'Scope 3 Upstream Energy indirect total GHGs emissions'
 
-        #
-        # TODO : Add kpi description here (similar to the procedure above!)
-        #
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*s.*cope( |-)3.*', score=8000, matching_mode=MATCHING_MUST_INCLUDE,
                                     score_decay=0.8, case_sensitive=False, multi_match_decay=0, letter_decay_hl=20,
-                                    letter_decay_disregard=len('total indirect ghg  scope-3 ')))
-
+                                    letter_decay_disregard=len('total indirect ghg  scope-3 ')))  # by Lei
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*ghg.*', score=3000, matching_mode=MATCHING_CAN_INCLUDE,
                                     score_decay=0.8, case_sensitive=False, multi_match_decay=0, letter_decay_hl=20,
                                     letter_decay_disregard=len('total indirect ghg  scope-3 ')))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*indirect.*', score=3000, matching_mode=MATCHING_MAY_INCLUDE,
                                     score_decay=0.8, case_sensitive=False, multi_match_decay=0, letter_decay_hl=20,
                                     letter_decay_disregard=len('total indirect ghg  scope-3 ')))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*emissions.*', score=3000, matching_mode=MATCHING_CAN_INCLUDE,
                                     score_decay=1, case_sensitive=False, multi_match_decay=1, letter_decay_hl=20,
@@ -389,13 +334,11 @@ def test_prepare_kpispecs():
                                     score_decay=0, case_sensitive=False, multi_match_decay=0, letter_decay_hl=10,
                                     letter_decay_disregard=0, count_if_matched=False,
                                     allow_matching_against_concat_txt=False))
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*s.*cope( |-)2.*', score=1, matching_mode=MATCHING_MUST_EXCLUDE,
                                     score_decay=0, case_sensitive=False, multi_match_decay=0, letter_decay_hl=10,
                                     letter_decay_disregard=0, count_if_matched=False,
                                     allow_matching_against_concat_txt=False))  # by Lei
-
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*305.*', score=1, matching_mode=MATCHING_MUST_EXCLUDE, score_decay=0,
                                     case_sensitive=False, multi_match_decay=0, letter_decay_hl=10,
@@ -417,11 +360,11 @@ def test_prepare_kpispecs():
 
         return kpi
 
-    # TODO: Add new KPI definitions here ! (similar to the procedures above: def prepare_...)
+    # TODO: Add new KPI definitions here ! (similar to the procedures above: def prepare_...) ###
+    # TODO: Append relevant Kpi definitions to "res" : ###
 
     res = [prepare_kpi_6_scope1_direct_total_ghg_emissions(), prepare_kpi_7_scope2_ghg_emissions(),
            prepare_kpi_8_scope3_ghg_emissions()]
-
     return res
 
 
@@ -430,37 +373,21 @@ def load_test_data(test_data_file_path):
     test_data.load_from_csv(test_data_file_path)
 
     # for testing purpose:
-    # test_data.filter_kpis(by_kpi_id = [2], by_data_type = ['TABLE'])
-    # test_data.filter_kpis(by_kpi_id = [2.1], by_data_type = ['TABLE'])
-    # test_data.filter_kpis(by_kpi_id = [3], by_data_type = ['TABLE'])
     test_data.filter_kpis(by_kpi_id=[7], by_data_type=['TABLE'])
 
-    # print("DATA-SET:")
-    # print(test_data)
-
-    # print("PDF-Files:")
-    # print(test_data.get_pdf_list())
-
-    # fix_list = DataImportExport.import_files(r"/home/ismail/Share/initial_data/Europe", config.global_raw_pdf_folder, test_data.get_pdf_list(), 'pdf')
     fix_list = DataImportExport.import_files(
         r"//Wwg00m.rootdom.net/afs-team/1200000089/FC/R-M/AZUREPOC/2020/KPIs extraction/Training data/03_Oil Gas sector reports/Europe",
         config.global_raw_pdf_folder, test_data.get_pdf_list(), 'pdf')
-    # fix_list = DataImportExport.import_files(r"//Wwg00m.rootdom.net/afs-team/1200000089/FC/R-M/AZUREPOC/2020/KPIs extraction/Training data", config.global_raw_pdf_folder, test_data.get_pdf_list(), 'pdf')
     test_data.fix_file_names(fix_list)
 
     # filter out entries with no source file:
     test_data.filter_kpis(by_has_fixed_source_file=True)
-
-    # print("DATA-SET:")
-    # print(test_data)
-
     return test_data
 
 
 def test_analyze_directory(htmldirectoy):
     ana = AnalyzerDirectory(htmldirectoy, 2019)
     kpis = test_prepare_kpispecs()
-    # print(kpis)
 
     kpiresults = KPIResultSet(ana.find_multiple_kpis(kpis))
 
@@ -497,18 +424,12 @@ def demo():
 
 def test_main():
     PDF_FILE = config.global_raw_pdf_folder + r'04_NOVATEK_AR_2016_ENG_11.pdf'
-
-    # test(PDF_FILE, "38")
-
     dir = test_load_json(PDF_FILE, "*")
-
     test_analyze_directory(dir)
 
 
 def test_evaluation():
     test_data = load_test_data(r'test_data/aggregated_complete_samples_new.csv')
-
-    # test_data.filter_kpis(by_source_file = ['NYSE_TOT_2015 annual.pdf', 'LUKOIL_ANNUAL_REPORT_2018_ENG'])
 
     test_data.filter_kpis(by_source_file=[
         'Aker-BP-Sustainability-Report-2019.pdf'  # KPIs are on pg: 84: 2009:665.1 ... 2013:575.7
@@ -519,16 +440,10 @@ def test_evaluation():
 
     print_big("Data-set", False)
     print(test_data)
-
     kpiresults = KPIResultSet.load_from_file(r'test_data/kpiresults_test_all_files_against_kpi_2_0.json')
-
     print_big("Kpi-Results", do_wait=False)
     print(kpiresults)
-
     print_big("Kpi-Evaluation", do_wait=False)
-
     kpis = test_prepare_kpispecs()
-
     test_eval = TestEvaluation.generate_evaluation(kpis, kpiresults, test_data)
-
     print(test_eval)
