@@ -75,12 +75,12 @@ def print_configuration():
     print_verbose(1, "Using config.global_page_of_pdf=" + config.global_page_of_pdf)
 
 
-def analyze_and_save_results(pdf_file, kpis, info_file_contents):
+def analyze_and_save_results(pdf_name, kpis, info_file_contents):
     """
     Analyze the specified PDF, save the results, and print verbose information.
 
     Args:
-        pdf_file (str): Path to the PDF file.
+        pdf_name (str): The name of the PDF file.
         kpis (list): List of KPI specifications.
         info_file_contents (dict): Information loaded from an info file.
 
@@ -89,10 +89,10 @@ def analyze_and_save_results(pdf_file, kpis, info_file_contents):
     """
     kpi_results = KPIResultSet(kpimeasures=[])
     # Modify * in wildcard_restrict_page in order to analyze specific page, e.g.:  *00042
-    cur_kpi_results = analyze_pdf(pdf_file, kpis, DEFAULT_YEAR, info_file_contents, wildcard_restrict_page='*')
+    cur_kpi_results = analyze_pdf(config.global_input_folder + pdf_name, kpis, DEFAULT_YEAR, info_file_contents, wildcard_restrict_page='*')
     kpi_results.extend(cur_kpi_results)
-    kpi_results.save_to_csv_file(pdf_file + r'.csv')
-    print_verbose(1, "RESULT FOR " + pdf_file)
+    kpi_results.save_to_csv_file(config.global_output_folder + pdf_name + r'.csv')
+    print_verbose(1, "RESULT FOR " + pdf_name)
     print_verbose(1, kpi_results)
     return kpi_results
 
@@ -183,7 +183,7 @@ def main():
     test_data = generate_dummy_test_data()
 
     # Filter PDF
-    # test_data.filter_kpis(by_source_file=['T. Rowe Price_2021_EN.pdf'])
+    test_data.filter_kpis(by_source_file=['T_Rowe_Price_2021_EN.pdf'])
 
     # Print information about the test data
     print_big("Data-set", False)
@@ -210,7 +210,7 @@ def main():
     # Iterate over each PDF in the list
     for pdf in pdfs:
         # Analyze the current PDF
-        kpi_results = analyze_and_save_results(config.global_input_folder + pdf, kpis, info_file_contents)
+        kpi_results = analyze_and_save_results(pdf, kpis, info_file_contents)
         overall_kpi_results.extend(kpi_results)
 
     # Record the finish time for performance measurement
