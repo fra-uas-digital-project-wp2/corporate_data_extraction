@@ -158,17 +158,6 @@ def analyze_pdf(pdf_file, kpis, default_year, info_file_contents, wildcard_restr
     return kpi_results
 
 
-def get_input_variable(val, desc):
-    if val is None:
-        val = input(desc)
-
-    if val is None or val == "":
-        print("This must not be empty")
-        sys.exit(0)
-
-    return val
-
-
 def main():
     # Parse command-line arguments
     parse_arguments()
