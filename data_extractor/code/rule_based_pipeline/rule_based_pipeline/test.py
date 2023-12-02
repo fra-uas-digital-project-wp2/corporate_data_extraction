@@ -13,7 +13,6 @@ from TestData import *
 from DataImportExport import *
 from TestEvaluation import *
 from KPISpecs import *
-import pytest
 
 
 def test(pdf_file, wildcard):
@@ -44,8 +43,6 @@ def test_print_all_clusters(htmldir):
 #
 # Only used for initial testing
 def test_prepare_kpispecs():
-    # TODO: This should be read from JSON files, but for now we can simply define it in code:
-
     def prepare_kpi_6_scope1_direct_total_ghg_emissions():
         # KPI 6 = Scope 1 / Direct total GHGs emissions
         kpi = KPISpecs()
@@ -208,9 +205,6 @@ def test_prepare_kpispecs():
         kpi.kpi_id = 7
         kpi.kpi_name = 'Scope 2 Energy indirect total GHGs emissions'
 
-        #
-        # TODO : Add kpi description here (similar to the procedure above!)
-        #
         kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(pattern_raw='.*s.*cope( |-)2.*market', score=5000,
                                                                  matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.8,
                                                                  case_sensitive=False, multi_match_decay=0,
@@ -248,15 +242,12 @@ def test_prepare_kpispecs():
         kpi.desc_regex_match_list.append(KPISpecs.DescRegExMatch(pattern_raw='.*indirect.*emissions.*', score=3000,
                                                                  matching_mode=MATCHING_MAY_INCLUDE, score_decay=0.8,
                                                                  case_sensitive=False, multi_match_decay=1,
-                                                                 letter_decay_hl=20, letter_decay_disregard=len(
-                'total indirect ghg  scope-2 ')))  # by Lei
+                                                                 letter_decay_hl=20, letter_decay_disregard=len('total indirect ghg  scope-2 ')))  # by Lei
 
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*(total|combine).*', score=1500, matching_mode=MATCHING_CAN_INCLUDE,
                                     score_decay=0.8, case_sensitive=False, multi_match_decay=1, letter_decay_hl=10,
                                     letter_decay_disregard=len('total indirect ghg  scope-2')))
-
-        # kpi.unit_regex_match_list.append(KPISpecs.GeneralRegExMatch(pattern_raw='.*(ton|mn|million|kt|m t|co 2).*', case_sensitive=False)) #by Lei
 
         kpi.desc_regex_match_list.append(
             KPISpecs.DescRegExMatch(pattern_raw='.*sale.*', score=1, matching_mode=MATCHING_MUST_EXCLUDE, score_decay=0,
@@ -303,6 +294,7 @@ def test_prepare_kpispecs():
         return kpi
 
     def prepare_kpi_8_scope3_ghg_emissions():
+        # KPI 8 = Scope 3
         kpi = KPISpecs()
         kpi.kpi_id = 8
         kpi.kpi_name = 'Scope 3 Upstream Energy indirect total GHGs emissions'
@@ -359,9 +351,6 @@ def test_prepare_kpispecs():
         kpi.minimum_score_desc_regex = 250
 
         return kpi
-
-    # TODO: Add new KPI definitions here ! (similar to the procedures above: def prepare_...) ###
-    # TODO: Append relevant Kpi definitions to "res" : ###
 
     res = [prepare_kpi_6_scope1_direct_total_ghg_emissions(), prepare_kpi_7_scope2_ghg_emissions(),
            prepare_kpi_8_scope3_ghg_emissions()]
