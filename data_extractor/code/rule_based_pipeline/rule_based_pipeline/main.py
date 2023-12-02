@@ -11,14 +11,95 @@ from KPIResultSet import *
 from TestData import *
 from DataImportExport import *
 import config
-from data_extractor.code.rule_based_pipeline.rule_based_pipeline.test import test_prepare_kpispecs, load_test_data
+from data_extractor.code.rule_based_pipeline.rule_based_pipeline.test import test_prepare_kpispecs
+
+# Constants Variables
+DEFAULT_YEAR = 2022
+
+
+def parse_arguments():
+    """
+    Parse command-line arguments and set global configuration variables.
+
+    Returns:
+        None
+    """
+    parser = argparse.ArgumentParser(description='Rule-based KPI extraction')
+    parser.add_argument('--input_folder', type=str, default=config.global_input_folder,
+                        help='Folder where PDFs are stored')
+    parser.add_argument('--working_folder', type=str, default=config.global_working_folder,
+                        help='Folder where working files are stored')
+    parser.add_argument('--output_folder', type=str, default=config.global_output_folder,
+                        help='Folder where output is stored')
+    parser.add_argument('--verbosity', type=int, default=config.global_verbosity,
+                        help='Verbosity level (0=shut up)')
+    # new optional arguments (for Debugging mode):
+    parser.add_argument('--name_of_pdf', type=str, default=config.global_name_of_pdf,
+                        help='Filter Specific PDF')
+    parser.add_argument('--page_of_pdf', type=str, default=config.global_page_of_pdf,
+                        help='Specific page of the PDF')
+
+
+def fix_config_paths():
+    """
+    Fix global paths in the configuration.
+    This function sets the global paths based on the current directory.
+
+    Returns:
+        None
+    """
+    try:
+        path = globals()['_dh'][0]
+    except KeyError:
+        path = os.path.dirname(os.path.realpath(__file__))
+    path = remove_trailing_slash(path).replace('\\', '/')
+    config.global_exec_folder = path + r'/'
+    config.global_rendering_font_override = path + r'/' + config.global_rendering_font_override
+
+
+def print_configuration():
+    """
+    Print configuration information.
+
+    Returns:
+        None
+    """
+    print_verbose(1, "Using config.global_exec_folder=" + config.global_exec_folder)
+    print_verbose(1, "Using config.global_input_folder=" + config.global_input_folder)
+    print_verbose(1, "Using config.global_working_folder=" + config.global_working_folder)
+    print_verbose(1, "Using config.global_output_folder=" + config.global_output_folder)
+    print_verbose(1, "Using config.global_verbosity=" + str(config.global_verbosity))
+    print_verbose(1, "Using config.global_rendering_font_override=" + config.global_rendering_font_override)
+    # new optional arguments (for Debugging mode):
+    print_verbose(1, "Using config.global_name_of_pdf=" + config.global_name_of_pdf)
+    print_verbose(1, "Using config.global_page_of_pdf=" + config.global_page_of_pdf)
+
+
+def analyze_and_save_results(pdf_file, kpis, info_file_contents):
+    """
+    Analyze the specified PDF, save the results, and print verbose information.
+
+    Args:
+        pdf_file (str): Path to the PDF file.
+        kpis (list): List of KPI specifications.
+        info_file_contents (dict): Information loaded from an info file.
+
+    Returns:
+        KPIResultSet: Results of the analysis.
+    """
+    kpi_results = KPIResultSet(kpimeasures=[])
+    # Modify * in wildcard_restrict_page in order to analyze specific page, e.g.:  *00042
+    cur_kpi_results = analyze_pdf(pdf_file, kpis, DEFAULT_YEAR, info_file_contents, wildcard_restrict_page='*')
+    kpi_results.extend(cur_kpi_results)
+    kpi_results.save_to_csv_file(pdf_file + r'.csv')
+    print_verbose(1, "RESULT FOR " + pdf_file)
+    print_verbose(1, kpi_results)
+    return kpi_results
 
 
 def generate_dummy_test_data():
     test_data = TestData()
-    test_data.generate_dummy_test_data(config.global_input_folder, '*')
-    # print("DATA-SET:")
-    # print(test_data)
+    test_data.generate_dummy_test_data(config.global_input_folder)
     return test_data
 
 
@@ -55,7 +136,7 @@ def analyze_pdf(pdf_file, kpis, default_year, info_file_contents, wildcard_restr
             if wildcard_restrict_page == '*':
                 reload_necessary = False
 
-    # return KPIResultSet()# STOP after parsing HTML files (dont continue with analysis)
+    # return KPIResultSet()# STOP after parsing HTML files (don't continue with analysis)
 
     # load json files
     print_big("Load from JSON", do_wait)
@@ -89,79 +170,64 @@ def get_input_variable(val, desc):
 
 
 def main():
-    DEFAULT_YEAR = 2022
+    # Parse command-line arguments
+    parse_arguments()
 
-    parser = argparse.ArgumentParser(description='Rule-based KPI extraction')
-    # Add the arguments
-    parser.add_argument('--raw_pdf_folder', type=str, default=config.global_input_folder, help='Folder where PDFs are stored')
-    parser.add_argument('--working_folder', type=str, default=config.global_working_folder, help='Folder where working files are stored')
-    parser.add_argument('--output_folder', type=str, default=config.global_output_folder, help='Folder where output is stored')
-    parser.add_argument('--verbosity', type=int, default=config.global_verbosity, help='Verbosity level (0=shut up)')
+    # Fix global paths
+    fix_config_paths()
 
-    # fix config.global_exec_folder and config.global_rendering_font_override
-    path = ''
-    try:
-        path = globals()['_dh'][0]
-    except KeyError:
-        path = os.path.dirname(os.path.realpath(__file__))
-    path = remove_trailing_slash(path).replace('\\', '/')
+    # Print configuration information
+    print_configuration()
 
-    config.global_exec_folder = path + r'/'
-    config.global_rendering_font_override = path + r'/' + config.global_rendering_font_override
-
-    print_verbose(1, "Using config.global_exec_folder=" + config.global_exec_folder)
-    print_verbose(1, "Using config.global_raw_pdf_folder=" + config.global_input_folder)
-    print_verbose(1, "Using config.global_working_folder=" + config.global_working_folder)
-    print_verbose(1, "Using config.global_output_folder=" + config.global_output_folder)
-    print_verbose(1, "Using config.global_verbosity=" + str(config.global_verbosity))
-    print_verbose(1, "Using config.global_rendering_font_override=" + config.global_rendering_font_override)
-
-    # test_data = load_test_data(r'test_data/aggregated_complete_samples_new.csv')
+    # Generate dummy test data
     test_data = generate_dummy_test_data()
 
-    # For debugging, save csv:
-    # test_data.save_to_csv(r'test_data/test_output_new.csv')
-    # return
-
     # Filter PDF
-    # test_data.filter_kpis(by_source_file = ['PGE_Corporation_CDP_Climate_Change_Questionnaire_2021.pdf'])
+    # test_data.filter_kpis(by_source_file=['T. Rowe Price_2021_EN.pdf'])
 
+    # Print information about the test data
     print_big("Data-set", False)
     print_verbose(1, test_data)
 
+    # Get a list of PDFs from the test data
     pdfs = test_data.get_fixed_pdf_list()
-
     print_verbose(1, 'Related (fixed) PDFs: ' + str(pdfs) + ', in total : ' + str(len(pdfs)))
-    # return # TODO: Uncomment this line, to return immediately, after PDF list has been shown.
+    # return # (only for Debugging purpose) I will delete it
 
-    kpis = test_prepare_kpispecs()  # TODO: In the future, KPI specs should be loaded from "nicer" implemented source, e.g., JSON file definition
+    # Prepare KPI specifications
+    kpis = test_prepare_kpispecs()
 
+    # Initialize overall KPI results
     overall_kpi_results = KPIResultSet()
 
-    info_file_contents = DataImportExport.load_info_file_contents(remove_trailing_slash(config.global_working_folder) + '/info.json')
+    # Load information from the file info.json
+    info_file_contents = DataImportExport.load_info_file_contents(remove_trailing_slash(config.global_working_folder)
+                                                                  + '/info.json')
 
+    # Record the start time for performance measurement
     time_start = time.time()
 
+    # Iterate over each PDF in the list
     for pdf in pdfs:
-        kpi_results = KPIResultSet(kpimeasures=[])
-        cur_kpi_results = analyze_pdf(config.global_input_folder + pdf, kpis, DEFAULT_YEAR, info_file_contents,
-                                      wildcard_restrict_page='*', assume_conversion_done=False,
-                                      force_parse_pdf=False)  # TODO:  Modify * in order to analyze specific page, e.g.:  *00042 ###
-        kpi_results.extend(cur_kpi_results)
-        overall_kpi_results.extend(cur_kpi_results)
-        kpi_results.save_to_csv_file(config.global_output_folder + pdf + r'.csv')
-        print_verbose(1, "RESULT FOR " + pdf)
-        print_verbose(1, kpi_results)
+        # Analyze the current PDF
+        kpi_results = analyze_and_save_results(config.global_input_folder + pdf, kpis, info_file_contents)
+        overall_kpi_results.extend(kpi_results)
 
+    # Record the finish time for performance measurement
     time_finish = time.time()
 
+    # Print the final overall result
     print_big("FINAL OVERALL-RESULT", do_wait=False)
     print_verbose(1, overall_kpi_results)
 
+    # Save overall KPI results to a CSV file
     overall_kpi_results.save_to_csv_file(config.global_output_folder + r'kpiresults_tmp.csv')
 
+    # Calculate and print the total run-time
     total_time = time_finish - time_start
     print_verbose(1, "Total run-time: " + str(total_time) + " sec ( " + str(total_time / max(len(pdfs), 1)) + " sec per PDF)")
 
 
-main()
+# Entry point of the program
+if __name__ == "__main__":
+    main()
