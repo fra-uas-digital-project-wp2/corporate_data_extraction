@@ -6,12 +6,17 @@
 # ============================================================================================================================
 
 
-global_verbosity = 1  # TODO: Change verbosity here. verbosity 6-8 are good values for debugging without too much output ###
+# Change verbosity here. verbosity 6-8 are good values for debugging without too much output
+global_verbosity = 1
 
 global_exec_folder = r"./"
 global_input_folder = r"input/"
 global_working_folder = r"working_folder/"
 global_output_folder = r"output/"
+
+# Filter PDFs and pages
+global_name_of_pdf = "*"
+global_page_of_pdf = "*"
 
 global_kpi_spec_path = ""  # if set, then command line argument will be ignored; example: "kpispec.txt"
 global_rendering_font_override = r"default_font.otf"
